@@ -1,5 +1,7 @@
 package io.sodaoud.heretest.app.di;
 
+import android.content.Context;
+
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
@@ -26,6 +28,12 @@ public class AppModule {
     @Provides
     @Singleton
     HereTestApplication providesApplication() {
+        return mApplication;
+    }
+
+    @Provides
+    @Singleton
+    Context providesContext() {
         return mApplication;
     }
 

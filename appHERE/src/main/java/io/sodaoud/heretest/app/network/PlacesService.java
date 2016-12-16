@@ -13,10 +13,10 @@ import rx.Observable;
 public interface PlacesService {
 
     @GET("discover/search")
-    Observable<SearchResult> searchPlace(@Query("at") String at, @Query("q") String q, @Query("tf") String tf);
+    Observable<SearchResult> searchPlace(@Query("in") String in, @Query("q") String q, @Query("tf") String tf);
 
 
     @GET("autosuggest")
-    Observable<AutoSuggestResult> autoSuggest(@Query("at") String at, @Query("q") String q, @Query("tf") String tf, @Query("size") int size);
+    Observable<AutoSuggestResult> autoSuggest(@Query("in") String in, @Query("q") String q, @Query("tf") String tf, @Query("size") int size);
 
 }

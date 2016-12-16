@@ -11,30 +11,22 @@ import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 
 import java.util.Arrays;
 
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.sodaoud.heretest.app.HereTestApplication;
 import io.sodaoud.heretest.app.R;
-import io.sodaoud.heretest.app.location.LocationProvider;
 import io.sodaoud.heretest.app.model.Place;
-import io.sodaoud.heretest.app.network.PlacesService;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.sodaoud.heretest.app.model.PlaceResult;
+import io.sodaoud.heretest.app.presenter.SearchPresenter;
+import io.sodaoud.heretest.app.ui.adapter.SearchAdapter;
+import io.sodaoud.heretest.app.view.SearchPlaceView;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity implements SearchPlaceView {
 
     private static final String TAG = SearchActivity.class.getName();
     public static final String PLACE = "PLACE";
     public static final String BBOX = "BBOX";
 
-    @Inject
-    PlacesService placesService;
-
-    @Inject
-    LocationProvider provider;
 
     @BindView(R.id.floating_search_view)
     FloatingSearchView mSearchView;
@@ -43,39 +35,28 @@ public class SearchActivity extends AppCompatActivity {
     RecyclerView mSearchResultsList;
 
     private SearchAdapter mSearchResultsAdapter;
-    private Subscription subscription;
+
+    private SearchPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        setExtras(getIntent().getExtras());
-        ((HereTestApplication) getApplication()).getComponent().inject(this);
         ButterKnife.bind(this);
+        presenter = new SearchPresenter(this);
+        presenter.init(((HereTestApplication) getApplication()).getComponent());
+        setExtras(getIntent().getExtras());
         setupFloatingSearch();
         setupResultsList();
     }
 
     private void setupFloatingSearch() {
+        mSearchView.setSearchFocused(true);
         mSearchView.setOnQueryChangeListener((oldQuery, newQuery) -> {
-
                     if (!oldQuery.equals("") && newQuery.equals("")) {
                         mSearchView.clearSuggestions();
                     } else {
-                        mSearchView.showProgress();
-
-                        if (subscription != null && subscription.isUnsubscribed())
-                            subscription.unsubscribe();
-
-                        subscription = placesService.autoSuggest("36.7323,3.1454", newQuery, "plain", 4)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(autoSuggestResult -> {
-                                            mSearchView.swapSuggestions(Arrays.asList(autoSuggestResult.getResults()));
-                                            mSearchView.hideProgress();
-                                        },
-                                        error -> showError(error));
-
+                        presenter.autoSuggest(newQuery);
                     }
                 }
         );
@@ -83,59 +64,75 @@ public class SearchActivity extends AppCompatActivity {
         mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
             public void onSuggestionClicked(final SearchSuggestion searchSuggestion) {
-
-                finishAndSendResult((Place) searchSuggestion);
+                presenter.onPlaceClicked((Place) searchSuggestion);
             }
 
             @Override
             public void onSearchAction(String query) {
+                presenter.search(query);
 
-                if (subscription != null && subscription.isUnsubscribed())
-                    subscription.unsubscribe();
-
-                subscription = placesService.searchPlace("52.5310,13.3848", query, "plain")
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(placesResult -> mSearchResultsAdapter.setPlaces(placesResult.getPlaces()),
-                                error -> showError(error));
             }
         });
 
         mSearchView.setOnMenuItemClickListener(item -> {
-
             if (item.getItemId() == R.id.action_location) {
-                if (provider.getLocation() != null) {
-                    Place p = new Place("Your Position", provider.getLocation());
-                    finishAndSendResult(p);
-                }
+                presenter.onLocationClicked();
             }
         });
-
         mSearchView.setOnHomeActionClickListener(this::finish);
-//
 
         mSearchView.setOnSuggestionsListHeightChanged(newHeight ->
                 mSearchResultsList.setTranslationY(newHeight));
     }
 
-    private void finishAndSendResult(Place place) {
-        Intent intent = this.getIntent();
-        intent.putExtra(PLACE, place);
-        this.setResult(RESULT_OK, intent);
-        finish();
-    }
 
     private void showError(Throwable error) {
-        error.printStackTrace();
     }
 
     private void setupResultsList() {
         mSearchResultsAdapter = new SearchAdapter();
-        mSearchResultsAdapter.getPositionClicks().subscribe(this::finishAndSendResult);
+        mSearchResultsAdapter.getPositionClicks().subscribe(presenter::onPlaceClicked);
         mSearchResultsList.setAdapter(mSearchResultsAdapter);
         mSearchResultsList.setLayoutManager(new LinearLayoutManager(this));
     }
 
     public void setExtras(Bundle extras) {
+        presenter.setBbox(extras.getString(MainActivity.BBOX));
+    }
+
+    @Override
+    public void showProgress(boolean b) {
+
+    }
+
+    @Override
+    public void setItems(PlaceResult[] items) {
+        mSearchResultsAdapter.setPlaces(items);
+    }
+
+    @Override
+    public void showError(String error) {
+
+    }
+
+    @Override
+    public void showSuggestionProgress(boolean show) {
+        if (show)
+            mSearchView.showProgress();
+        else
+            mSearchView.hideProgress();
+    }
+
+    @Override
+    public void showSuggestions(Place[] places) {
+        mSearchView.swapSuggestions(Arrays.asList(places));
+    }
+
+    @Override
+    public void retrunPlace(Place place) {
+        Intent intent = this.getIntent();
+        intent.putExtra(PLACE, place);
+        this.setResult(RESULT_OK, intent);
+        finish();
     }
 }

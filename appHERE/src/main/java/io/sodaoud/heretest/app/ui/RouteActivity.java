@@ -6,37 +6,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.sodaoud.heretest.app.BuildConfig;
 import io.sodaoud.heretest.app.HereTestApplication;
 import io.sodaoud.heretest.app.R;
-import io.sodaoud.heretest.app.model.Place;
 import io.sodaoud.heretest.app.model.Route;
-import io.sodaoud.heretest.app.model.RouteResult;
-import io.sodaoud.heretest.app.network.RouteService;
-import io.sodaoud.heretest.app.util.Util;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.sodaoud.heretest.app.presenter.RoutePresenter;
+import io.sodaoud.heretest.app.ui.adapter.RouteAdapter;
+import io.sodaoud.heretest.app.view.RouteView;
 
 import static io.sodaoud.heretest.app.ui.SearchActivity.PLACE;
 
-public class RouteActivity extends AppCompatActivity {
+public class RouteActivity extends AppCompatActivity implements RouteView {
 
     private static final String TAG = RouteActivity.class.getName();
     private static final int FROM_REQ_CODE = 98;
     private static final int TO_REQ_CODE = 99;
     public static final String ROUTE = "ROUTE";
-
-    @Inject
-    RouteService routeService;
 
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
@@ -50,19 +40,22 @@ public class RouteActivity extends AppCompatActivity {
     TextView toTv;
 
     private RouteAdapter adapter;
-
-    private Place from;
-    private Place to;
-
+    private RoutePresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route);
-        ((HereTestApplication) getApplication()).getComponent().inject(this);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        presenter = new RoutePresenter(this);
+        presenter.init(((HereTestApplication) getApplicationContext()).getComponent());
+        initRecyclerView();
+    }
+
+    private void initRecyclerView() {
         adapter = new RouteAdapter();
         adapter.getPositionClicks().subscribe(route -> showRouteOnMap(route));
         recyclerView.setAdapter(adapter);
@@ -76,21 +69,6 @@ public class RouteActivity extends AppCompatActivity {
         finish();
     }
 
-    private void calculateRoute() {
-        if (from != null && to != null)
-            routeService.calculateRoute(
-                    BuildConfig.appId,
-                    BuildConfig.appCode,
-                    Util.getPlace(from),
-                    Util.getPlace(to),
-                    "fastest;car",
-                    5,
-                    "text",
-                    "shape,labels,bb").subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(route -> showRoute(route),
-                            error -> showError(error));
-    }
 
     @OnClick(R.id.from_tv)
     public void fromClick(View v) {
@@ -105,28 +83,13 @@ public class RouteActivity extends AppCompatActivity {
 
     @OnClick(R.id.swap)
     public void swap(View v) {
-        Place tmp = from;
-        from = to;
-        to = tmp;
-        updateTextViews();
+        presenter.swapPlaces();
     }
 
     private void launchSearchActivity(int reqCode) {
         Intent i = new Intent(this, SearchActivity.class);
+        i.putExtras(getIntent());
         startActivityForResult(i, reqCode);
-    }
-
-    private void showRoute(RouteResult route) {
-        adapter.setRoutes(route.getRoutes());
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    private void showError(Throwable error) {
-        Log.e(TAG, "Error occurred", error);
     }
 
     @Override
@@ -134,19 +97,38 @@ public class RouteActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == FROM_REQ_CODE) {
-                from = data.getParcelableExtra(PLACE);
+                presenter.setFrom(data.getParcelableExtra(PLACE));
             }
 
             if (requestCode == TO_REQ_CODE) {
-                to = data.getParcelableExtra(PLACE);
+                presenter.setTo(data.getParcelableExtra(PLACE));
             }
-            updateTextViews();
-            calculateRoute();
         }
     }
 
-    void updateTextViews() {
-        toTv.setText(to != null ? to.getTitle() : "");
-        fromTv.setText(from != null ? from.getTitle() : "");
+    @Override
+    public void showProgress(boolean show) {
+
+    }
+
+
+    @Override
+    public void setItems(Route[] items) {
+        adapter.setRoutes(items);
+    }
+
+    @Override
+    public void showError(String error) {
+
+    }
+
+    @Override
+    public void setFromText(String from) {
+        fromTv.setText(from);
+    }
+
+    @Override
+    public void setToText(String to) {
+        toTv.setText(to);
     }
 }

@@ -7,7 +7,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresPermission;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
@@ -43,9 +42,6 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks, Go
                 .build();
     }
 
-    @RequiresPermission(
-            anyOf = {"android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"}
-    )
     public void connect() {
         if (client.isConnected()) {
             startLocationUpdates();

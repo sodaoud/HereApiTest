@@ -4,8 +4,9 @@ package io.sodaoud.heretest.app.di;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import io.sodaoud.heretest.app.ui.MainActivity;
-import io.sodaoud.heretest.app.ui.RouteActivity;
+import io.sodaoud.heretest.app.presenter.MapPresenter;
+import io.sodaoud.heretest.app.presenter.RoutePresenter;
+import io.sodaoud.heretest.app.presenter.SearchPresenter;
 import io.sodaoud.heretest.app.ui.SearchActivity;
 
 /**
@@ -16,10 +17,10 @@ import io.sodaoud.heretest.app.ui.SearchActivity;
 @Component(modules = {AppModule.class, NetworkModule.class})
 public interface ApplicationComponent {
 
-    void inject(RouteActivity activity);
+    void inject(RoutePresenter presenter);
 
-    void inject(SearchActivity searchActivity);
+    void inject(SearchPresenter searchActivity);
 
-    void inject(MainActivity mapsActivity);
+    void inject(MapPresenter mapPresenter);
 }
 

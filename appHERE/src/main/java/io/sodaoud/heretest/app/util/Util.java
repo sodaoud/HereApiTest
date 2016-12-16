@@ -1,6 +1,8 @@
 package io.sodaoud.heretest.app.util;
 
 
+import android.location.Location;
+
 import com.here.android.mpa.common.GeoBoundingBox;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.GeoPolyline;
@@ -47,5 +49,26 @@ public class Util {
                 new GeoCoordinate(route.getBottomRight().getLatitude(),
                         route.getBottomRight().getLongitude())
         );
+    }
+
+    public static String getPositionFormat(Location location) {
+        if (location == null) return "";
+        return new StringBuilder().append("geo:")
+                .append(location.getLatitude())
+                .append(",")
+                .append(location.getLongitude())
+                .toString();
+    }
+
+    public static String getStringBoundingBox(GeoBoundingBox boundingBox) {
+        return new StringBuilder()
+                .append(boundingBox.getBottomRight().getLongitude())
+                .append(",")
+                .append(boundingBox.getBottomRight().getLatitude())
+                .append(",")
+                .append(boundingBox.getTopLeft().getLongitude())
+                .append(",")
+                .append(boundingBox.getTopLeft().getLatitude())
+                .toString();
     }
 }
