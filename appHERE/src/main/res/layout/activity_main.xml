@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.RouteActivity">
+
+    <fragment
+        android:id="@+id/mapfragment"
+        class="com.here.android.mpa.mapping.MapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.arlib.floatingsearchview.FloatingSearchView
+        android:id="@+id/floating_search_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:floatingSearch_close_search_on_keyboard_dismiss="false"
+        app:floatingSearch_dimBackground="true"
+        app:floatingSearch_dismissOnOutsideTouch="true"
+        app:floatingSearch_leftActionMode="showSearch"
+        app:floatingSearch_searchBarMarginLeft="6dp"
+        app:floatingSearch_searchBarMarginRight="6dp"
+        app:floatingSearch_searchBarMarginTop="6dp"
+        app:floatingSearch_searchHint="Search..."
+        app:floatingSearch_showSearchKey="true"
+        app:floatingSearch_suggestionsListAnimDuration="250" />
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/directions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:tint="@android:color/white"
+        app:srcCompat="@drawable/ic_directions" />
+
+</android.support.design.widget.CoordinatorLayout>
