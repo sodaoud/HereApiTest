@@ -8,7 +8,7 @@ import io.sodaoud.heretest.app.model.Route;
 
 public interface RouteView extends ListView<Route> {
 
-    public void setFromText(String from);
+    void setFromText(String from);
 
-    public void setToText(String to);
+    void setToText(String to);
 }

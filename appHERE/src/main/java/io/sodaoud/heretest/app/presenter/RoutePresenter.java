@@ -58,8 +58,8 @@ public class RoutePresenter {
                     "text",
                     "shape,labels,bb").subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(route -> showRoute(route),
-                            error -> showError(error));
+                    .subscribe(this::showRoute,
+                            this::showError);
         }
     }
 

@@ -89,7 +89,7 @@ public class RouteActivity extends AppCompatActivity implements RouteView {
 
     private void initRecyclerView() {
         adapter = new RouteAdapter();
-        adapter.getPositionClicks().subscribe(route -> showRouteOnMap(route));
+        adapter.getPositionClicks().subscribe(this::showRouteOnMap);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

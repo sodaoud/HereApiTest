@@ -9,8 +9,8 @@ import io.sodaoud.heretest.app.model.PlaceResult;
 
 public interface SearchPlaceView extends ListView<PlaceResult> {
 
-    public void showSuggestionProgress(boolean show);
+    void showSuggestionProgress(boolean show);
 
-    public void showSuggestions(Place[] places);
+    void showSuggestions(Place[] places);
 
 }

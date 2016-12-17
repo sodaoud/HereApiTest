@@ -37,9 +37,8 @@ public class Util {
             double lon = Double.parseDouble(point.substring(point.indexOf(',') + 1));
             coordinates.add(new GeoCoordinate(lat, lon));
         }
-        GeoPolyline polyline = new GeoPolyline(coordinates);
 
-        return polyline;
+        return new GeoPolyline(coordinates);
     }
 
     public static GeoBoundingBox getGeoBoundingBox(Route route) {

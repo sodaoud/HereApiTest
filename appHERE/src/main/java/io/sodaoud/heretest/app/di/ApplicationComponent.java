@@ -7,7 +7,6 @@ import dagger.Component;
 import io.sodaoud.heretest.app.presenter.MapPresenter;
 import io.sodaoud.heretest.app.presenter.RoutePresenter;
 import io.sodaoud.heretest.app.presenter.SearchPresenter;
-import io.sodaoud.heretest.app.ui.SearchActivity;
 
 /**
  * Created by sofiane on 12/12/16.
