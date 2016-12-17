@@ -19,12 +19,9 @@ import io.sodaoud.heretest.app.model.Route;
 
 public class Util {
 
-    public static String vicinityTextTransform(String vicinity) {
-        return vicinity.replaceAll("<br/>", ", ");
-    }
-
     public static String getPlace(Place place) {
-        return "geo!" + place.getPosition()[0] + "," + place.getPosition()[1];
+        // TODO 'loc!' instead of 'geo!'
+        return "geo!" + place.getLatitude() + "," + place.getLongitude();
     }
 
 
@@ -72,6 +69,6 @@ public class Util {
     }
 
     public static GeoCoordinate getGeoCoordinate(Place place) {
-        return new GeoCoordinate(place.getPosition()[0], place.getPosition()[1]);
+        return new GeoCoordinate(place.getLatitude(), place.getLongitude());
     }
 }

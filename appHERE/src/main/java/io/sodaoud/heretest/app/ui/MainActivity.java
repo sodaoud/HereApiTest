@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements MapView, SearchPl
     @Override
     public void showPlace(Place place) {
         MapMarker placeMarker = new MapMarker();
-        placeMarker.setCoordinate(new GeoCoordinate(place.getPosition()[0], place.getPosition()[1]));
+        placeMarker.setCoordinate(new GeoCoordinate(place.getLatitude(), place.getLongitude()));
         map.addMapObject(placeMarker);
         map.setCenter(Util.getGeoCoordinate(place), Map.Animation.LINEAR);
         objects.add(placeMarker);

@@ -69,8 +69,16 @@ public class Place implements SearchSuggestion {
         return vicinity;
     }
 
-    public double[] getPosition() {
-        return position;
+//    public double[] getPosition() {
+//        return position;
+//    }
+
+    public double getLatitude() {
+        return position[0];
+    }
+
+    public double getLongitude() {
+        return position[1];
     }
 
     public String getId() {
