@@ -1,6 +1,7 @@
 package io.sodaoud.heretest.app.presenter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Location;
 
 import com.google.android.gms.location.LocationListener;
@@ -42,6 +43,6 @@ public class MapPresenter implements LocationListener {
     }
 
     public void onResultRoute(Route route) {
-        view.showRoute(route);
+        view.showRoute(route, Color.BLUE);
     }
 }

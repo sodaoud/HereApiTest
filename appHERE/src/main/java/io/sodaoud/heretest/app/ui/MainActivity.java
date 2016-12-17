@@ -20,6 +20,7 @@ import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
 import com.here.android.mpa.mapping.MapMarker;
+import com.here.android.mpa.mapping.MapObject;
 import com.here.android.mpa.mapping.MapPolyline;
 
 import java.io.IOException;
@@ -57,8 +58,8 @@ public class MainActivity extends AppCompatActivity implements MapView {
     private MapMarker myPositionMarker;
 
     private MapPresenter presenter;
-    private MapPolyline routePolyline;
 
+    List<MapObject> objects = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements MapView {
     void onDirectionsClick(View view) {
         Intent i = new Intent(this, RouteActivity.class);
         String bb = Util.getStringBoundingBox(map.getBoundingBox());
-        i.putExtra(MainActivity.BBOX,bb);
+        i.putExtra(MainActivity.BBOX, bb);
         startActivityForResult(i, DIRECTION_REQ);
     }
 
@@ -136,20 +137,21 @@ public class MainActivity extends AppCompatActivity implements MapView {
     }
 
     @Override
-    public void showRoute(Route route) {
-        if (routePolyline != null) {
-            map.removeMapObject(routePolyline);
-        }
-        routePolyline = new MapPolyline(Util.getGeoPolyline(route));
-        routePolyline.setLineColor(Color.BLUE);
+    public void showRoute(Route route, int color) {
+        MapPolyline routePolyline = new MapPolyline(Util.getGeoPolyline(route));
+        routePolyline.setLineColor(color);
         routePolyline.setLineWidth(10);
         map.addMapObject(routePolyline);
         map.zoomTo(Util.getGeoBoundingBox(route), Map.Animation.LINEAR, Map.MOVE_PRESERVE_ORIENTATION);
+        objects.add(routePolyline);
     }
 
     @Override
     public void showPlace(Place place) {
-        // TODO
+        MapMarker placeMarker = new MapMarker();
+        placeMarker.setCoordinate(new GeoCoordinate(place.getPosition()[0], place.getPosition()[1]));
+        map.addMapObject(placeMarker);
+        objects.add(placeMarker);
     }
 
     @Override
@@ -168,5 +170,11 @@ public class MainActivity extends AppCompatActivity implements MapView {
             map.addMapObject(myPositionMarker);
         } else
             myPositionMarker.setCoordinate(new GeoCoordinate(location.getLatitude(), location.getLongitude()));
+    }
+
+    @Override
+    public void removeAllObjects() {
+        map.removeMapObjects(objects);
+        objects.clear();
     }
 }

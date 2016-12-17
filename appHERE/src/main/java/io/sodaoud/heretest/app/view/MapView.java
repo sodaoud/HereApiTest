@@ -11,9 +11,11 @@ import io.sodaoud.heretest.app.model.Route;
 
 public interface MapView {
 
-    public void showRoute(Route route);
+    public void showRoute(Route route, int color);
 
     public void showPlace(Place place);
 
     public void showPosition(Location location);
+
+    public void removeAllObjects();
 }
