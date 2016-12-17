@@ -27,6 +27,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro',
                     'proguard-here-sdk.txt'
+            buildConfigField 'String', 'auth', '"' + getAuthorizationKey("OqpnobT53uA4j7UjVz8d", "GkndtjBhAZzU7o4zZlkvsw") + '"'
+            buildConfigField 'String', 'appCode', '"GkndtjBhAZzU7o4zZlkvsw"'
+            buildConfigField 'String', 'appId', '"OqpnobT53uA4j7UjVz8d"'
         }
     }
 

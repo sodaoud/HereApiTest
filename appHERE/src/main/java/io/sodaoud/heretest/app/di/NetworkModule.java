@@ -34,7 +34,8 @@ public class NetworkModule {
     }
 
     @Provides
-    @Singleton // TODO make sure it does not affect using the same client with multiple retrofit adapters
+    @Singleton
+    // TODO make sure it does not affect using the same client with multiple retrofit adapters
     @Named("HEREApi")
     public OkHttpClient providesOkHttpClient(LocationProvider provider) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
@@ -46,13 +47,12 @@ public class NetworkModule {
         return builder.build();
     }
 
-
     @Provides
     @Singleton
     @Named("Places")
     public Retrofit providesPlacesRetrofit(Gson gson, @Named("HEREApi") OkHttpClient client) {
         return new Retrofit.Builder()
-                .baseUrl(Constants.PLACES_API_ENDPOINT)
+                .baseUrl(Constants.getPlacesApiEndpoint())
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
@@ -64,7 +64,7 @@ public class NetworkModule {
     @Named("Route")
     public Retrofit providesRouteRetrofit(Gson gson, @Named("HEREApi") OkHttpClient client) {
         return new Retrofit.Builder()
-                .baseUrl(Constants.ROUTE_API_ENDPOINT)
+                .baseUrl(Constants.getRouteApiEndpoint())
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())

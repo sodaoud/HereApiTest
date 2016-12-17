@@ -13,8 +13,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -271,11 +269,9 @@ public class MainActivity extends AppCompatActivity implements MapView, SearchPl
 
     @Override
     public void showMessage(String text, int resource) {
-        View v = getLayoutInflater().inflate(R.layout.message, null);
-        ((ImageView) v.findViewById(R.id.message_img)).setImageResource(resource);
-        ((TextView) v.findViewById(R.id.message_text)).setText(text);
         new AlertDialog.Builder(this)
-                .setView(v)
+                .setIcon(resource)
+                .setMessage(text)
                 .setCancelable(true)
                 .setPositiveButton(android.R.string.ok, null)
                 .show();
