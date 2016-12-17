@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -25,7 +26,6 @@ public class SearchActivity extends AppCompatActivity implements SearchPlaceView
 
     private static final String TAG = SearchActivity.class.getName();
     public static final String PLACE = "PLACE";
-    public static final String BBOX = "BBOX";
 
 
     @BindView(R.id.floating_search_view)
@@ -33,6 +33,9 @@ public class SearchActivity extends AppCompatActivity implements SearchPlaceView
 
     @BindView(R.id.search_results_list)
     RecyclerView mSearchResultsList;
+
+    @BindView(R.id.progress)
+    View progress;
 
     private SearchAdapter mSearchResultsAdapter;
 
@@ -101,8 +104,9 @@ public class SearchActivity extends AppCompatActivity implements SearchPlaceView
     }
 
     @Override
-    public void showProgress(boolean b) {
-
+    public void showProgress(boolean show) {
+        progress.setVisibility(show ? View.VISIBLE : View.GONE);
+        mSearchResultsList.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
     @Override

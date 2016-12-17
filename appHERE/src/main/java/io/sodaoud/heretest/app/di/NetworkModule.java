@@ -34,14 +34,13 @@ public class NetworkModule {
     }
 
     @Provides
-    @Singleton // make sure it does not affect using the same with multiple retrofit adapters
+    @Singleton // TODO make sure it does not affect using the same client with multiple retrofit adapters
     @Named("HEREApi")
     public OkHttpClient providesOkHttpClient(LocationProvider provider) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.addInterceptor(chain -> {
             Request request = chain.request().newBuilder().addHeader("Authorization", "Basic " + BuildConfig.auth)
                     .addHeader("Geolocation", Util.getPositionFormat(provider.getLocation())).build();
-            chain.request().newBuilder().addHeader("Authorization", "Basic " + BuildConfig.auth).build();
             return chain.proceed(request);
         });
         return builder.build();

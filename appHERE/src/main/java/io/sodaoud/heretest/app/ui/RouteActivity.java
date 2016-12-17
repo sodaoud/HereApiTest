@@ -31,6 +31,9 @@ public class RouteActivity extends AppCompatActivity implements RouteView {
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
+    @BindView(R.id.progress)
+    View progress;
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -108,7 +111,8 @@ public class RouteActivity extends AppCompatActivity implements RouteView {
 
     @Override
     public void showProgress(boolean show) {
-
+        progress.setVisibility(show ? View.VISIBLE : View.GONE);
+        recyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
 

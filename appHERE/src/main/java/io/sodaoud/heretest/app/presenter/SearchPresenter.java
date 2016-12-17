@@ -34,7 +34,7 @@ public class SearchPresenter {
         this.view = view;
     }
 
-    public void init(ApplicationComponent component){
+    public void init(ApplicationComponent component) {
         component.inject(this);
     }
 
@@ -47,7 +47,7 @@ public class SearchPresenter {
         if (subscription != null && subscription.isUnsubscribed())
             subscription.unsubscribe();
 
-        subscription = placesService.autoSuggest(bbox, query, "plain", 4)
+        subscription = placesService.autoSuggest(provider.getLocation() != null ? bbox : "", query, "plain", 4)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(autoSuggestResult -> {
@@ -58,7 +58,7 @@ public class SearchPresenter {
 
     }
 
-    public void onPlaceClicked(Place place){
+    public void onPlaceClicked(Place place) {
         view.retrunPlace(place);
     }
 
@@ -71,7 +71,7 @@ public class SearchPresenter {
         if (subscription != null && subscription.isUnsubscribed())
             subscription.unsubscribe();
 
-        subscription = placesService.searchPlace(bbox, query, "plain")
+        subscription = placesService.searchPlace(provider.getLocation() != null ? bbox : "", query, "plain")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(placesResult -> view.setItems(placesResult.getPlaces()),
