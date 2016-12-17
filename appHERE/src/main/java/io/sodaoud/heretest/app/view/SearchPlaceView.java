@@ -13,5 +13,4 @@ public interface SearchPlaceView extends ListView<PlaceResult> {
 
     public void showSuggestions(Place[] places);
 
-    void retrunPlace(Place p);
 }

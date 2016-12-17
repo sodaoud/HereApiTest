@@ -50,4 +50,8 @@
         android:paddingTop="100dp"
         android:visibility="gone" />
 
+    <include
+        android:id="@+id/message"
+        layout="@layout/message" />
+
 </android.support.design.widget.CoordinatorLayout>

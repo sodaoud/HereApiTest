@@ -6,12 +6,14 @@ import android.util.Log;
 import javax.inject.Inject;
 
 import io.sodaoud.heretest.app.BuildConfig;
+import io.sodaoud.heretest.app.R;
 import io.sodaoud.heretest.app.di.ApplicationComponent;
 import io.sodaoud.heretest.app.model.Place;
 import io.sodaoud.heretest.app.model.RouteResult;
 import io.sodaoud.heretest.app.network.RouteService;
 import io.sodaoud.heretest.app.util.Util;
 import io.sodaoud.heretest.app.view.RouteView;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -21,6 +23,8 @@ import static android.content.ContentValues.TAG;
  * Created by sofiane on 12/16/16.
  */
 public class RoutePresenter {
+
+    private Subscription subscription;
 
     public RoutePresenter(RouteView view) {
         this.view = view;
@@ -38,9 +42,13 @@ public class RoutePresenter {
     private Place to;
 
     private void calculateRoute() {
+        if (subscription != null && subscription.isUnsubscribed())
+            subscription.unsubscribe();
+
         if (from != null && to != null) {
             view.showProgress(true);
-            routeService.calculateRoute(
+
+            subscription = routeService.calculateRoute(
                     BuildConfig.appId,
                     BuildConfig.appCode,
                     Util.getPlace(from),
@@ -57,13 +65,16 @@ public class RoutePresenter {
 
     private void showRoute(RouteResult route) {
         view.showProgress(false);
-        view.setItems(route.getRoutes());
+        if (route.getRoutes() != null && route.getRoutes().length > 0)
+            view.setItems(route.getRoutes());
+        else
+            view.showMessage("No Routes Found for this query", R.drawable.ic_not_interested);
     }
 
     private void showError(Throwable error) {
         Log.e(TAG, "Error calculate route", error);
         view.showProgress(false);
-        view.showError("Error Calculating Route, please retry");
+        view.showMessage("Error Calculating Route, please retry", R.drawable.ic_error);
     }
 
     public void setFrom(Place from) {
@@ -87,6 +98,10 @@ public class RoutePresenter {
         view.setToText(to == null ? "" : to.getTitle());
 
         calculateRoute();
+    }
+
+    public void onStop() {
+        subscription.unsubscribe();
     }
 
     public void init(ApplicationComponent component) {

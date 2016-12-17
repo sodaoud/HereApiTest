@@ -3,17 +3,21 @@ package io.sodaoud.heretest.app.ui;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.PointF;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.Image;
 import com.here.android.mpa.common.OnEngineInitListener;
@@ -22,22 +26,27 @@ import com.here.android.mpa.mapping.MapFragment;
 import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.MapObject;
 import com.here.android.mpa.mapping.MapPolyline;
+import com.here.android.mpa.mapping.MapState;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.sodaoud.heretest.app.HereTestApplication;
 import io.sodaoud.heretest.app.R;
 import io.sodaoud.heretest.app.model.Place;
+import io.sodaoud.heretest.app.model.PlaceResult;
 import io.sodaoud.heretest.app.model.Route;
 import io.sodaoud.heretest.app.presenter.MapPresenter;
 import io.sodaoud.heretest.app.util.Util;
 import io.sodaoud.heretest.app.view.MapView;
+import io.sodaoud.heretest.app.view.SearchPlaceView;
 
-public class MainActivity extends AppCompatActivity implements MapView {
+public class MainActivity extends AppCompatActivity implements MapView, SearchPlaceView {
 
     private static final String TAG = MainActivity.class.getName();
 
@@ -45,12 +54,16 @@ public class MainActivity extends AppCompatActivity implements MapView {
      * permissions request code
      */
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
-    private static final int DIRECTION_REQ = 142;
+    public static final int DIRECTION_REQ = 142;
 
 
     private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
             Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     public static final String BBOX = "BBOX";
+
+
+    @BindView(R.id.floating_search_view)
+    FloatingSearchView mSearchView;
 
     private Map map;
     MapFragment mapFragment;
@@ -105,7 +118,8 @@ public class MainActivity extends AppCompatActivity implements MapView {
 
     private void initialize() {
         presenter = new MapPresenter(this);
-        presenter.init(this);
+        presenter.setSearchView(this);
+        presenter.init(((HereTestApplication) getApplicationContext()).getComponent());
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapfragment);
@@ -113,19 +127,76 @@ public class MainActivity extends AppCompatActivity implements MapView {
                     if (error == OnEngineInitListener.Error.NONE) {
                         map = mapFragment.getMap();
                         presenter.initLocation();
+                        presenter.setBbox(Util.getStringBoundingBox(map.getBoundingBox()));
+                        initMapListeners();
                     } else {
                         Log.e(TAG, error.getDetails());
                     }
                 }
         );
+        setupFloatingSearch();
+    }
+
+    private void initMapListeners() {
+        map.addTransformListener(new Map.OnTransformListener() {
+            @Override
+            public void onMapTransformStart() {
+                // DO NOTHING
+            }
+
+            @Override
+            public void onMapTransformEnd(MapState mapState) {
+                presenter.setBbox(Util.getStringBoundingBox(map.getBoundingBox()));
+            }
+        });
+    }
+
+    private void setupFloatingSearch() {
+        mSearchView.setOnQueryChangeListener((oldQuery, newQuery) -> {
+                    if (!oldQuery.equals("") && newQuery.equals("")) {
+                        mSearchView.clearSuggestions();
+                    } else {
+                        presenter.autoSuggest(newQuery);
+                    }
+                }
+        );
+
+        mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
+            @Override
+            public void onSuggestionClicked(final SearchSuggestion searchSuggestion) {
+                presenter.onPlaceClicked((Place) searchSuggestion);
+            }
+
+            @Override
+            public void onSearchAction(String query) {
+                presenter.search(query);
+
+            }
+        });
+
+        mSearchView.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_location) {
+                presenter.onLocationClicked();
+            }
+        });
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        presenter.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.onDestroy();
     }
 
     @OnClick(R.id.directions)
     void onDirectionsClick(View view) {
-        Intent i = new Intent(this, RouteActivity.class);
-        String bb = Util.getStringBoundingBox(map.getBoundingBox());
-        i.putExtra(MainActivity.BBOX, bb);
-        startActivityForResult(i, DIRECTION_REQ);
+        presenter.onDirectionClicked(this);
     }
 
     @Override
@@ -151,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements MapView {
         MapMarker placeMarker = new MapMarker();
         placeMarker.setCoordinate(new GeoCoordinate(place.getPosition()[0], place.getPosition()[1]));
         map.addMapObject(placeMarker);
+        map.setCenter(Util.getGeoCoordinate(place), Map.Animation.LINEAR);
         objects.add(placeMarker);
     }
 
@@ -176,5 +248,38 @@ public class MainActivity extends AppCompatActivity implements MapView {
     public void removeAllObjects() {
         map.removeMapObjects(objects);
         objects.clear();
+    }
+
+    @Override
+    public void showSuggestionProgress(boolean show) {
+        showProgress(show);
+    }
+
+    @Override
+    public void showSuggestions(Place[] places) {
+        mSearchView.swapSuggestions(Arrays.asList(places));
+    }
+
+    @Override
+    public void showProgress(boolean b) {
+        if (b) mSearchView.showProgress();
+        else mSearchView.hideProgress();
+    }
+
+    @Override
+    public void setItems(PlaceResult[] items) {
+// NOT IMPLEMENTED YET (show multiple places on map)
+    }
+
+    @Override
+    public void showMessage(String text, int resource) {
+        View v = getLayoutInflater().inflate(R.layout.message, null);
+        ((ImageView) v.findViewById(R.id.message_img)).setImageResource(resource);
+        ((TextView) v.findViewById(R.id.message_text)).setText(text);
+        new AlertDialog.Builder(this)
+                .setView(v)
+                .setCancelable(true)
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
     }
 }

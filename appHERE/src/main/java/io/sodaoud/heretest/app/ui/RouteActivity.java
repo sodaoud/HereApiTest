@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -14,6 +15,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.sodaoud.heretest.app.HereTestApplication;
 import io.sodaoud.heretest.app.R;
+import io.sodaoud.heretest.app.model.Place;
 import io.sodaoud.heretest.app.model.Route;
 import io.sodaoud.heretest.app.presenter.RoutePresenter;
 import io.sodaoud.heretest.app.ui.adapter.RouteAdapter;
@@ -27,12 +29,20 @@ public class RouteActivity extends AppCompatActivity implements RouteView {
     private static final int FROM_REQ_CODE = 98;
     private static final int TO_REQ_CODE = 99;
     public static final String ROUTE = "ROUTE";
+    public static final String DESTINATION = "DESTINATION";
 
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
     @BindView(R.id.progress)
     View progress;
+
+    @BindView(R.id.message)
+    View message;
+    @BindView(R.id.message_img)
+    ImageView messageImg;
+    @BindView(R.id.message_text)
+    TextView messageText;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -56,6 +66,14 @@ public class RouteActivity extends AppCompatActivity implements RouteView {
         presenter = new RoutePresenter(this);
         presenter.init(((HereTestApplication) getApplicationContext()).getComponent());
         initRecyclerView();
+
+        initExtras(getIntent().getExtras());
+    }
+
+    private void initExtras(Bundle extras) {
+        Place destination = (Place) extras.get(DESTINATION);
+        if (destination != null)
+            presenter.setTo(destination);
     }
 
     private void initRecyclerView() {
@@ -113,17 +131,25 @@ public class RouteActivity extends AppCompatActivity implements RouteView {
     public void showProgress(boolean show) {
         progress.setVisibility(show ? View.VISIBLE : View.GONE);
         recyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
+        message.setVisibility(View.GONE);
     }
-
 
     @Override
     public void setItems(Route[] items) {
+        progress.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+        message.setVisibility(View.GONE);
         adapter.setRoutes(items);
     }
 
     @Override
-    public void showError(String error) {
+    public void showMessage(String text, int res) {
+        progress.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
+        message.setVisibility(View.VISIBLE);
 
+        messageImg.setImageResource(res);
+        messageText.setText(text);
     }
 
     @Override

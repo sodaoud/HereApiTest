@@ -71,4 +71,8 @@ public class Util {
                 .append(boundingBox.getTopLeft().getLatitude())
                 .toString();
     }
+
+    public static GeoCoordinate getGeoCoordinate(Place place) {
+        return new GeoCoordinate(place.getPosition()[0], place.getPosition()[1]);
+    }
 }

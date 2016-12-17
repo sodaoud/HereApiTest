@@ -1,11 +1,12 @@
 package io.sodaoud.heretest.app.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -36,6 +37,13 @@ public class SearchActivity extends AppCompatActivity implements SearchPlaceView
 
     @BindView(R.id.progress)
     View progress;
+
+    @BindView(R.id.message)
+    View message;
+    @BindView(R.id.message_img)
+    ImageView messageImg;
+    @BindView(R.id.message_text)
+    TextView messageText;
 
     private SearchAdapter mSearchResultsAdapter;
 
@@ -88,10 +96,6 @@ public class SearchActivity extends AppCompatActivity implements SearchPlaceView
                 mSearchResultsList.setTranslationY(newHeight));
     }
 
-
-    private void showError(Throwable error) {
-    }
-
     private void setupResultsList() {
         mSearchResultsAdapter = new SearchAdapter();
         mSearchResultsAdapter.getPositionClicks().subscribe(presenter::onPlaceClicked);
@@ -107,16 +111,24 @@ public class SearchActivity extends AppCompatActivity implements SearchPlaceView
     public void showProgress(boolean show) {
         progress.setVisibility(show ? View.VISIBLE : View.GONE);
         mSearchResultsList.setVisibility(show ? View.GONE : View.VISIBLE);
+        message.setVisibility(View.GONE);
     }
 
     @Override
     public void setItems(PlaceResult[] items) {
         mSearchResultsAdapter.setPlaces(items);
+        message.setVisibility(View.GONE);
+        mSearchResultsList.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void showError(String error) {
+    public void showMessage(String text, int res) {
+        progress.setVisibility(View.GONE);
+        mSearchResultsList.setVisibility(View.GONE);
+        message.setVisibility(View.VISIBLE);
 
+        messageImg.setImageResource(res);
+        messageText.setText(text);
     }
 
     @Override
@@ -132,11 +144,4 @@ public class SearchActivity extends AppCompatActivity implements SearchPlaceView
         mSearchView.swapSuggestions(Arrays.asList(places));
     }
 
-    @Override
-    public void retrunPlace(Place place) {
-        Intent intent = this.getIntent();
-        intent.putExtra(PLACE, place);
-        this.setResult(RESULT_OK, intent);
-        finish();
-    }
 }

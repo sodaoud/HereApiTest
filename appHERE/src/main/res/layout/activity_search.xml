@@ -35,6 +35,10 @@
             android:paddingTop="80dp"
             android:visibility="gone" />
 
+        <include
+            android:id="@+id/message"
+            layout="@layout/message" />
+
         <com.arlib.floatingsearchview.FloatingSearchView
             android:id="@+id/floating_search_view"
             android:layout_width="match_parent"

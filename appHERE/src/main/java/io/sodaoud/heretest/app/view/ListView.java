@@ -10,6 +10,6 @@ public interface ListView<T> {
 
     void setItems(T[] items);
 
-    void showError(String error);
+    void showMessage(String error, int imageDrawable);
 
 }
