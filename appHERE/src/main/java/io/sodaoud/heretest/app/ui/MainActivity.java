@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements MapView, SearchPl
 
     protected void checkPermissions() {
         final List<String> missingPermissions = new ArrayList<>();
-        // check all required dynamic permissions
         for (final String permission : REQUIRED_SDK_PERMISSIONS) {
             final int result = ContextCompat.checkSelfPermission(this, permission);
             if (result != PackageManager.PERMISSION_GRANTED) {
@@ -90,7 +89,6 @@ public class MainActivity extends AppCompatActivity implements MapView, SearchPl
             }
         }
         if (!missingPermissions.isEmpty()) {
-            // request all missing permissions
             final String[] permissions = missingPermissions
                     .toArray(new String[missingPermissions.size()]);
             ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_ASK_PERMISSIONS);
@@ -268,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements MapView, SearchPl
 
     @Override
     public void setItems(PlaceResult[] items) {
-// NOT IMPLEMENTED YET (show multiple places on map)
+        // NOT IMPLEMENTED YET (show multiple places on map)
     }
 
     @Override

@@ -61,6 +61,12 @@ public class SearchActivity extends AppCompatActivity implements SearchPlaceView
         setupResultsList();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        presenter.onStop();
+    }
+
     private void setupFloatingSearch() {
         mSearchView.setSearchFocused(true);
         mSearchView.setOnQueryChangeListener((oldQuery, newQuery) -> {
