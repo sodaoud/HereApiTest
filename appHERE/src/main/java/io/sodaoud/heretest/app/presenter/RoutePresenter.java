@@ -88,7 +88,7 @@ public class RoutePresenter {
     }
 
     public void setTo(Place to) {
-        if (from == null) {
+        if (to == null) {
             view.setToText("");
             return;
         }

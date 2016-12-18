@@ -40,7 +40,10 @@ public class SearchPresenter {
 
     public SearchPresenter(SearchPlaceView view) {
         this.view = view;
-        activity = (Activity) view;
+    }
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
     }
 
     public void init(ApplicationComponent component) {
@@ -56,7 +59,7 @@ public class SearchPresenter {
         if (subscription != null && subscription.isUnsubscribed())
             subscription.unsubscribe();
 
-        subscription = placesService.autoSuggest(bbox, query, "plain", 4)
+        subscription = placesService.autoSuggest(bbox, query, 4)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(autoSuggestResult -> {
@@ -89,7 +92,7 @@ public class SearchPresenter {
             subscription.unsubscribe();
         view.showProgress(true);
 
-        subscription = placesService.searchPlace(bbox, query, "plain")
+        subscription = placesService.searchPlace(bbox, query)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(placesResult -> {

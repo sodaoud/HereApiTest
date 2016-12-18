@@ -1,4 +1,4 @@
-package io.sodaoud.heretest.app.util;
+package io.sodaoud.heretest.app.testutil;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;

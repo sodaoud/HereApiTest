@@ -55,6 +55,7 @@ public class SearchActivity extends AppCompatActivity implements SearchPlaceView
         setContentView(R.layout.activity_search);
         ButterKnife.bind(this);
         presenter = new SearchPresenter(this);
+        presenter.setActivity(this);
         presenter.init(((HereTestApplication) getApplication()).getComponent());
         setExtras(getIntent().getExtras());
         setupFloatingSearch();

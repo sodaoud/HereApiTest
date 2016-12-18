@@ -81,7 +81,7 @@ public class MapPresenter implements LocationListener {
         if (subscription != null && subscription.isUnsubscribed())
             subscription.unsubscribe();
 
-        subscription = placesService.autoSuggest(bbox, query, "plain", 4)
+        subscription = placesService.autoSuggest(bbox, query, 4)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(autoSuggestResult -> {
@@ -109,7 +109,7 @@ public class MapPresenter implements LocationListener {
             subscription.unsubscribe();
         searchView.showProgress(true);
 
-        subscription = placesService.searchPlace(bbox, query, "plain")
+        subscription = placesService.searchPlace(bbox, query)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(placesResult -> {

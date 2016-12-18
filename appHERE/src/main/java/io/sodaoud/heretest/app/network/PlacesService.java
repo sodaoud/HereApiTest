@@ -14,10 +14,10 @@ import rx.Observable;
 public interface PlacesService {
 
 
-    @GET("discover/search")
-    Observable<SearchResult> searchPlace(@Header("X-Map-Viewport") String in, @Query("q") String q, @Query("tf") String tf);
+    @GET("discover/search?tf=plain")
+    Observable<SearchResult> searchPlace(@Header("X-Map-Viewport") String in, @Query("q") String q);
 
-    @GET("autosuggest")
-    Observable<AutoSuggestResult> autoSuggest(@Header("X-Map-Viewport") String in, @Query("q") String q, @Query("tf") String tf, @Query("size") int size);
+    @GET("autosuggest?tf=plain&result_types=place")
+    Observable<AutoSuggestResult> autoSuggest(@Header("X-Map-Viewport") String in, @Query("q") String q, @Query("size") int size);
 
 }

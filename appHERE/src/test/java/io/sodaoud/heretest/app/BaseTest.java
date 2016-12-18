@@ -12,7 +12,7 @@ import io.sodaoud.heretest.app.di.ApplicationComponent;
 import io.sodaoud.heretest.app.network.PlacesService;
 import io.sodaoud.heretest.app.network.RouteService;
 import io.sodaoud.heretest.app.test.TestModule;
-import io.sodaoud.heretest.app.util.RxSchedulersOverrideRule;
+import io.sodaoud.heretest.app.testutil.RxSchedulersOverrideRule;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BaseTest {
