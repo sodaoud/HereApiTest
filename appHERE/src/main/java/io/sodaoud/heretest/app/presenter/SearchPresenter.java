@@ -107,7 +107,7 @@ public class SearchPresenter {
 
     public void onLocationClicked() {
         if (provider.getLocation() != null) {
-            Place p = new Place("Your Position", provider.getLocation());
+            Place p = new Place("Your Position", provider.getLocation().getLatitude(), provider.getLocation().getLongitude());
             retrunPlace(p);
         }
     }

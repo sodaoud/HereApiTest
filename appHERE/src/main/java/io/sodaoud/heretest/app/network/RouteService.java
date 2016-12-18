@@ -17,7 +17,7 @@ public interface RouteService {
                                            @Query("waypoint0") String waypoint0,
                                            @Query("waypoint1") String waypoint1,
                                            @Query("mode") String mode,
-                                           @Query("alternatives") int alternatives,
+                                           @Query("alternatives") Integer alternatives,
                                            @Query("instructionFormat") String instructionFormat,
                                            @Query("routeattributes") String routeattributes
     );

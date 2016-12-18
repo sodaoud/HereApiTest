@@ -19,7 +19,7 @@ import io.sodaoud.heretest.app.model.Route;
 
 public class Util {
 
-    public static String getPlace(Place place) {
+    public static String getWaypointFromPlace(Place place) {
         // TODO 'loc!' instead of 'geo!'
         return "geo!" + place.getLatitude() + "," + place.getLongitude();
     }

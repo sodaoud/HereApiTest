@@ -127,8 +127,6 @@ public class MapPresenter implements LocationListener {
 
     public void onLocationClicked() {
         if (provider.getLocation() != null) {
-            Place p = new Place("Your Position", provider.getLocation());
-//            searchView.retrunPlace(p);
         }
     }
 

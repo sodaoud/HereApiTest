@@ -51,12 +51,13 @@ public class RoutePresenter {
             subscription = routeService.calculateRoute(
                     BuildConfig.appId,
                     BuildConfig.appCode,
-                    Util.getPlace(from),
-                    Util.getPlace(to),
+                    Util.getWaypointFromPlace(from),
+                    Util.getWaypointFromPlace(to),
                     "fastest;car",
                     5,
                     "text",
-                    "shape,labels,bb").subscribeOn(Schedulers.io())
+                    "shape,labels,bb")
+                    .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::showRoute,
                             this::showError);
@@ -78,12 +79,20 @@ public class RoutePresenter {
     }
 
     public void setFrom(Place from) {
+        if (from == null) {
+            view.setFromText("");
+            return;
+        }
         this.from = from;
         view.setFromText(from.getTitle());
         calculateRoute();
     }
 
     public void setTo(Place to) {
+        if (from == null) {
+            view.setToText("");
+            return;
+        }
         this.to = to;
         view.setToText(to.getTitle());
         calculateRoute();

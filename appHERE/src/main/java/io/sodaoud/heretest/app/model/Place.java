@@ -1,6 +1,5 @@
 package io.sodaoud.heretest.app.model;
 
-import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -12,10 +11,10 @@ import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 
 public class Place implements SearchSuggestion {
 
-    public Place(String title, Location location) {
+    public Place(String title, double latitude, double longitude) {
         this.title = title;
         position = new double[]{
-                location.getLatitude(), location.getLongitude()
+                latitude, longitude
         };
     }
 
