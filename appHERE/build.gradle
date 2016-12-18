@@ -32,6 +32,9 @@ android {
             buildConfigField 'String', 'appId', '"OqpnobT53uA4j7UjVz8d"'
         }
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

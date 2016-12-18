@@ -12,14 +12,15 @@ import io.sodaoud.heretest.app.model.RouteResult;
 import io.sodaoud.heretest.app.util.Util;
 import io.sodaoud.heretest.app.view.RouteView;
 import rx.Observable;
+import rx.exceptions.CompositeException;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -64,7 +65,7 @@ public class RouteTest extends BaseTest {
                 , Mockito.any()
                 , Mockito.any()
                 , Mockito.any()))
-                .thenReturn(Observable.<RouteResult>error(new Exception()));
+                .thenReturn(Observable.<RouteResult>error(new RuntimeException("Error")));
 
         when(routeService.calculateRoute(
                 Mockito.any()

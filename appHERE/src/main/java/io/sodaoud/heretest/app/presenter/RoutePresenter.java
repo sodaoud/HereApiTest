@@ -17,12 +17,11 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static android.content.ContentValues.TAG;
-
 /**
  * Created by sofiane on 12/16/16.
  */
 public class RoutePresenter {
+    private static final String TAG = RoutePresenter.class.getName();
 
     private Subscription subscription;
 
